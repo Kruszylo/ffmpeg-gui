@@ -3,7 +3,7 @@
 
 import tkinter
 from tkinter import ttk
-from tkinter.filedialog import askopenfilename, asksaveasfilename
+from tkinter.filedialog import askopenfilename, asksaveasfilename, askdirectory
 from tkinter import messagebox
 import subprocess
 import fcntl
@@ -148,7 +148,7 @@ class Application(tkinter.Tk):
         source.grid(row=0, columnspan=3, sticky='WE',
                     padx=5, pady=5, ipadx=5, ipady=5)
 
-        inputFileLbl = tkinter.Label(source, text="Select File:")
+        inputFileLbl = tkinter.Label(source, text="Select File(s):")
         inputFileLbl.grid(row=0, column=0, sticky='E', padx=5, pady=2)
         self.inputFileVar = tkinter.StringVar()
         self.inputFileTxt = tkinter.Entry(
@@ -165,7 +165,7 @@ class Application(tkinter.Tk):
         output.grid(row=1, columnspan=3, sticky='WE',
                     padx=5, pady=5, ipadx=5, ipady=5)
 
-        outputFileLbl = tkinter.Label(output, text="Save File to:")
+        outputFileLbl = tkinter.Label(output, text="Save File(s) to:")
         outputFileLbl.grid(row=0, column=0, sticky='E', padx=5, pady=2)
 
         self.outputFileVar = tkinter.StringVar()
@@ -254,8 +254,8 @@ class Application(tkinter.Tk):
         Application.onInputBrowseClick(inst)
         Shows default window for choosing where to save file
         """
-        self.outputFile = asksaveasfilename()
-        self.outputFileVar.set(self.outputFile)
+        self.outputFile = askdirectory()
+        self.outputFileVar.set(self.outputFile + os.sep)
 
     def OnPresetSelected(self, *argv):
         preset = self.presetsVar.get()
@@ -291,9 +291,12 @@ class Application(tkinter.Tk):
         """
         if self.inputFiles:
             files = self.splitlist(self.inputFiles)
-            for filename in files:
-                self.encodeFile(filename)
+            for filepath in files:
+                filepath_no_extension = os.path.splitext(filepath)[0]
+                filename = os.path.basename(filepath_no_extension)
+                self.encodeButton['state'] = 'disable'
                 self.cancelEncodeButton['state'] = 'normal'
+                self.encodeFile(filepath, filename)
         else:
             messagebox.showwarning(
                 u"No source selected", u"You must define at least one file to encode")
@@ -310,8 +313,10 @@ class Application(tkinter.Tk):
         if response:
             if self.cmd is not None:
                 self.cancelEncoding = True
+                
+                self.encodeButton['state'] = 'normal'
 
-    def encodeFile(self, filename):
+    def encodeFile(self, filename, outfilename):
         """
         Application.encodeFile(inst, filename)
         Encodes file with choosen preset in a subprocess
@@ -319,6 +324,7 @@ class Application(tkinter.Tk):
         self.t_encodeFile = threading.currentThread()
 
         output = self.outputFileVar.get()
+        output += outfilename
         out_format = self.preset['format']
         if output.endswith('.'+out_format) is False:
             output += '.' + out_format
