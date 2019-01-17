@@ -3,6 +3,7 @@
 
 import tkinter
 
+
 class Settings(tkinter.Tk):
 
     def __init__(self, root, parent):
@@ -12,7 +13,7 @@ class Settings(tkinter.Tk):
         parent - instance of Application class, form where Settings form was called
         """
         tkinter.Tk.__init__(self, root)
-        
+
         self.vcodecs = [
             u"libtheora",
             u"libvpx",
@@ -96,16 +97,16 @@ class Settings(tkinter.Tk):
         self.abVar.set(self.preset['ab'])
         self.formatVar.set(self.preset['format'])
         self.extraOptionsVar.set(self.preset['extraOptions'])
-        
+
         self.protocol("WM_DELETE_WINDOW", self.onClose)
-    
+
     def onClose(self):
         """
         Settings.onClose(inst)
         Runs when user want to close window
         """
         self.destroy()
-        
+
     def initialize(self):
         """
         Settings.onClose(inst)
@@ -115,13 +116,13 @@ class Settings(tkinter.Tk):
         self.resizable(True, True)
         self.grid()
         self.widgets()
-    
+
     def widgets(self):
         """
         Settings.onClose(inst)
         Creates and adds control elements (labels, etries, buttons etc.) to the form of instance inst of class Settings
         """
-        
+
         # Video options
         video = tkinter.LabelFrame(self, text=u"Video options")
         video.grid(row=0, column=0, sticky='NWES',
@@ -179,8 +180,9 @@ class Settings(tkinter.Tk):
 
         fpsLbl = tkinter.Label(video, text=u"Frame rate")
         fpsLbl.grid(row=5, column=0, sticky='E', padx=5, pady=2)
-        
-        fpsComment = tkinter.Label(video, text=u"(if value is 0 than takes FPS from source)")
+
+        fpsComment = tkinter.Label(
+            video, text=u"(if value is 0 than takes FPS from source)")
         fpsComment.grid(row=6, column=1, sticky='NW', padx=5, pady=2)
         self.fpsVar = tkinter.IntVar(self)
         self.fps = tkinter.Entry(video, textvariable=self.fpsVar)
@@ -236,7 +238,7 @@ class Settings(tkinter.Tk):
         self.abVar.set(0)
         self.ab = tkinter.Entry(audio, textvariable=self.abVar)
         self.ab.grid(row=2, column=1, sticky="W", padx=5, pady=2)
-        
+
         # Options
 
         options = tkinter.LabelFrame(self, text=u"Options")
@@ -264,7 +266,7 @@ class Settings(tkinter.Tk):
         extraOptionsTxt.grid(row=1, column=1, sticky="WE", pady=3)
 
         # Save changes of preset button
-        
+
         saveButton = tkinter.Button(
             self, text=u"Save", command=self.onSaveClick)
         saveButton.grid(row=3, column=0, sticky='NWES', padx=5, pady=2)
@@ -274,8 +276,7 @@ class Settings(tkinter.Tk):
         cancelButton = tkinter.Button(
             self, text=u"Cancel", command=self.onClose)
         cancelButton.grid(row=3, column=1, sticky='NWES', padx=5, pady=2)
-        
-        
+
     def onSaveClick(self):
         """
         Settings.OnSaveClick(inst)
@@ -295,7 +296,7 @@ class Settings(tkinter.Tk):
         self.preset['ab'] = self.abVar.get()
         self.preset['format'] = self.formatVar.get()
         self.preset['extraOptions'] = self.extraOptionsVar.get()
-        
+
         self.parent.preset = self.preset
         self.parent.updateTotalInfo(self.preset)
         self.destroy()

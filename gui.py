@@ -3,6 +3,8 @@
 
 from mainwindow import Application
 from mainwindow import is_tool
+
+
 def main():
     app = Application(None)
     print(app.initialize().__doc__)

@@ -4,7 +4,6 @@
 import tkinter
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-#from filedialog import askopenfilename, asksaveasfilename
 from tkinter import messagebox
 import subprocess
 import fcntl
@@ -16,6 +15,7 @@ import time
 from settings import Settings
 from tkinter.constants import END, LEFT, BOTH
 
+
 def is_tool(name):
     """Check whether `name` is on PATH and marked as executable."""
 
@@ -24,14 +24,15 @@ def is_tool(name):
 
     return which(name) is not None
 
+
 class Application(tkinter.Tk):
 
     def __init__(self, parent):
         tkinter.Tk.__init__(self, parent)
         self.parent = parent
-        if is_tool('ffmpeg') == False:
+        if is_tool('ffmpeg') is False:
             messagebox.showwarning(
-                u"FFMPEG not found!", 
+                u"FFMPEG not found!",
                 u"You must install ffmpeg on you computer before using this GUI")
         self.presets = {
             'H.264 720p': {
@@ -123,7 +124,7 @@ class Application(tkinter.Tk):
         self.initialize()
         self.protocol("WM_DELETE_WINDOW", self.onClose)
         self.inputFiles = []
-    
+
     def initialize(self):
         """
         Application.initialize(inst)
@@ -199,17 +200,20 @@ class Application(tkinter.Tk):
         self.presetsList.grid(row=0, column=1, sticky="w", padx=5, pady=2)
 
         self.showSettingsButton = tkinter.Button(
-            preset, text="More ...",state='disabled', command=self.onShowSettingsClick)
-        self.showSettingsButton.grid(row=0, column=3, sticky='W', padx=5, pady=2)
-        
+            preset, text="More ...", state='disabled', command=self.onShowSettingsClick)
+        self.showSettingsButton.grid(
+            row=0, column=3, sticky='W', padx=5, pady=2)
+
         # total information about preset
-        
+
         self.total_info = ''
         total = tkinter.LabelFrame(self, text=u"Total inforation")
-        total.grid(row=3, columnspan=2, sticky='WE', padx=10, pady=10, ipadx=5, ipady=5)
-        self.totalLbl = tkinter.Label(total, text=self.total_info, anchor="e", justify=LEFT)
+        total.grid(row=3, columnspan=2, sticky='WE',
+                   padx=10, pady=10, ipadx=5, ipady=5)
+        self.totalLbl = tkinter.Label(
+            total, text=self.total_info, anchor="e", justify=LEFT)
         self.totalLbl.grid(row=0, column=0, sticky='E', padx=5, pady=2)
-        
+
         # Encode button
 
         self.encodeButton = tkinter.Button(
@@ -221,21 +225,22 @@ class Application(tkinter.Tk):
         self.progress = ttk.Progressbar(
             self, orient='horizontal', mode="determinate")
         self.progress.grid(row=15, column=1, sticky="WE", padx=5, pady=2)
-   
-        #Cancel encoding button
+
+        # Cancel encoding button
 
         self.cancelEncodeButton = tkinter.Button(
             self, text=u"Cancel", state='disabled', command=self.onCancelEncodeClick)
-        self.cancelEncodeButton.grid(row=15, column=2, sticky='NWES', padx=5, pady=2)
+        self.cancelEncodeButton.grid(
+            row=15, column=2, sticky='NWES', padx=5, pady=2)
 
     def onClose(self):
         """
         Application.onClose(inst)
-        Runs when form is about to be closed, asks if user sure that he want to close the form 
+        Runs when form is about to be closed, asks if user sure that he want to close the form
         """
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             self.destroy()
-    
+
     def onInputBrowseClick(self):
         """
         Application.onInputBrowseClick(inst)
@@ -251,7 +256,7 @@ class Application(tkinter.Tk):
         """
         self.outputFile = asksaveasfilename()
         self.outputFileVar.set(self.outputFile)
-        
+
     def OnPresetSelected(self, *argv):
         preset = self.presetsVar.get()
         if self.presets[preset]:
@@ -259,8 +264,7 @@ class Application(tkinter.Tk):
             self.showSettingsButton['state'] = 'normal'
             self.encodeButton['state'] = 'normal'
         self.updateTotalInfo(preset)
-            
-            
+
     def onShowSettingsClick(self):
         """
         Application.onShowSettingsClick(inst)
@@ -268,7 +272,7 @@ class Application(tkinter.Tk):
         """
         self.settings_window = Settings(None, self)
         self.settings_window.title("Settings")
-    
+
     def updateTotalInfo(self, preset):
         """
         Application.updateTotalInfo(inst, preset)
@@ -279,7 +283,7 @@ class Application(tkinter.Tk):
         for key, value in self.preset.items():
             self.total_info += f'{key}: {value}\n'
         self.totalLbl['text'] = self.total_info
-        
+
     def onEncodeClick(self):
         """
         Application.onEncodeClick(inst)
@@ -316,16 +320,16 @@ class Application(tkinter.Tk):
 
         output = self.outputFileVar.get()
         out_format = self.preset['format']
-        if output.endswith('.'+out_format) == False:
+        if output.endswith('.'+out_format) is False:
             output += '.' + out_format
         vcodec = self.preset['vcodec']
         vb = self.preset['vb']
-        fps = self.preset.get('fps',0)
+        fps = self.preset.get('fps', 0)
         qmax = self.preset['qmax']
         qmin = self.preset['qmin']
         pixfmt = self.preset['pix_fmt']
         width = self.preset['width']
-        height = self.preset['height'] 
+        height = self.preset['height']
         acodec = self.preset['acodec']
         ar = self.preset['ar']
         ab = self.preset['ab']
@@ -428,7 +432,7 @@ class Application(tkinter.Tk):
     def progress_callback(self, progress, duration):
         """
         Application.encodeFile(inst, progress_value, duration)
-        Updates encoding progress bar 
+        Updates encoding progress bar
         """
         self.progress["maximum"] = duration
         self.progress["value"] = progress
@@ -440,4 +444,3 @@ class Application(tkinter.Tk):
         Shows messege box when encoding is completed
         """
         messagebox.showinfo(u"Encoding complete", u"Encoding complete")
-
